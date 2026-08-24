@@ -2,7 +2,7 @@
     {
         "folder": "aristotleEducator",
         "name": "AristotleK12 Educator",
-        "id": null,
+        "id": "mjkknmkfafjbnhndgpnjmkbfkiobcahh",
         "version": "11.0.0",
         "updateUrl": "https://rogueone.aristotleinsight.com/UpdateCheck/LENAPE_RHSD_NJ_K12_AICS/6edf304682a1180657fb821a4d84acfe/",
         "manifestVersion": 3
@@ -10,7 +10,7 @@
     {
         "folder": "aristotleStudent",
         "name": "AristotleK12 Student",
-        "id": null,
+        "id": "eljeiokhajcnnpgegbcablegmaipigdk",
         "version": "23.14.0",
         "updateUrl": "https://rogueone.aristotleinsight.com/UpdateCheck/LENAPE_RHSD_NJ_K12_AICS/6edf304682a1180657fb821a4d84acfe/",
         "manifestVersion": 3
@@ -82,7 +82,7 @@
     {
         "folder": "goguardian",
         "name": "GoGuardian",
-        "id": null,
+        "id": "haldlgldplgnggkjaafhelgiaglafanh",
         "version": "4.0.7422.1",
         "updateUrl": "https://ext.goguardian.com/stable.xml",
         "manifestVersion": 2
@@ -98,7 +98,7 @@
     {
         "folder": "haparahighlights",
         "name": "haparahighlights",
-        "id": null,
+        "id": "aceopacgaepdcelohobicpffbbejnfac",
         "version": "6.9.0",
         "updateUrl": "https://extension.hapara.com/extension/updates/manifest-update-url-fallback",
         "manifestVersion": 3
@@ -162,7 +162,7 @@
     {
         "folder": "lightspeedFilterAgent",
         "name": "Lightspeed Filter Agent",
-        "id": null,
+        "id": "ehnniokiiebpinnfegpkdlcamgdcaaje",
         "version": "4.4.6.1785883975",
         "updateUrl": "https://lsrelay-extensions-production.s3.amazonaws.com/chrome-filter/f8db5b5547d93ef167b094ef5c73485f56e752bb4971141abb5cda8ffb88c8ee/v3/ChromeFilter.xml",
         "manifestVersion": 3
@@ -210,7 +210,7 @@
     {
         "folder": "securly",
         "name": "Securly for Chromebooks",
-        "id": null,
+        "id": "ckecmkbnoanpgplccmnoikfmpcdladkc",
         "version": "3.0.60",
         "updateUrl": "https://crextnaut.securly.com/subscribers/defaultfrommanifest@securly.com/update-manifest.xml",
         "manifestVersion": 3
@@ -218,7 +218,7 @@
     {
         "folder": "securlyClassroom",
         "name": "Securly Classroom",
-        "id": null,
+        "id": "hkobaiihndnbfhbkmjjfbdimfbdcppdh",
         "version": "1.37.3",
         "updateUrl": "https://crextnaut.securly.com/subscribers/defaultfrommanifest@securly.com/update-manifest.xml",
         "manifestVersion": 3

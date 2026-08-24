@@ -86,11 +86,53 @@ fn extractAttr(gpa: Allocator, tag: []const u8, name: []const u8) Allocator.Erro
     return try gpa.dupe(u8, rest[0..end]);
 }
 
+/// Finds the `<updatecheck ... />` tag that belongs to `<app appid="{id}">`
+/// specifically, and returns its attribute text (borrowed from `text`).
+///
+/// Google's real Omaha server answers a query for one id with a response
+/// about that one id, so a document-wide "first `<updatecheck>`" search
+/// would be enough there. It isn't enough in general: several vendor
+/// endpoints in extensions.json are static files that return their *entire*
+/// app catalog regardless of the `x=id=...` query param — confirmed live on
+/// both Aristotle's and Securly's shared endpoints, each answering every
+/// request (any id, any of their several extensions) with the same
+/// multi-`<app>` document. Taking the first `<updatecheck>` in that document
+/// silently returns a *different extension's* version and download URL —
+/// caught by exactly that: aristotleEducator's first check reported version
+/// "18.14.0", which turned out to be aristotleStudent's version, not
+/// Educator's own "11.0.0". Scoping the search to the matching `<app appid>`
+/// block fixes it for both the single-app and multi-app response shapes.
+fn findUpdatecheckForApp(text: []const u8, extensionId: []const u8) ?[]const u8 {
+    var buf: [64]u8 = undefined;
+    const appNeedle = std.fmt.bufPrint(&buf, "<app appid=\"{s}\"", .{extensionId}) catch return null;
+    const appStart = std.mem.indexOf(u8, text, appNeedle) orelse return null;
+
+    // Bound the search at whichever comes first: this app's own closing tag,
+    // or the next sibling `<app` — so a malformed or updatecheck-less entry
+    // for the requested id can never fall through into a neighboring app's
+    // data instead.
+    const afterApp = text[appStart..];
+    const ownEnd = std.mem.indexOf(u8, afterApp, "</app>");
+    const nextApp = std.mem.indexOfPos(u8, afterApp, appNeedle.len, "<app appid=");
+    const boundary = blk: {
+        if (ownEnd) |a| {
+            if (nextApp) |b| break :blk @min(a, b);
+            break :blk a;
+        }
+        break :blk nextApp orelse afterApp.len;
+    };
+    const scoped = afterApp[0..boundary];
+
+    const tagStart = std.mem.indexOf(u8, scoped, "<updatecheck") orelse return null;
+    const tagEnd = std.mem.indexOfPos(u8, scoped, tagStart, "/>") orelse
+        (std.mem.indexOfPos(u8, scoped, tagStart, "</updatecheck>") orelse return null);
+    return scoped[tagStart..tagEnd];
+}
+
 /// Fetches and parses the update record for one extension. Returns
-/// `error.NoUpdateAvailable` if the response has no `<updatecheck ... />`
-/// carrying a codebase (which the 0.0.0.0 query trick above should never
-/// actually produce, but a server rejecting a malformed id would still land
-/// here rather than crash).
+/// `error.NoUpdateAvailable` if the response has no `<app appid="...">`
+/// matching the requested id, or that app has no `<updatecheck ... />`
+/// carrying a codebase.
 pub fn check(
     gpa: Allocator,
     client: *std.http.Client,
@@ -111,10 +153,7 @@ pub fn check(
     if (result.status != .ok) return error.NoUpdateAvailable;
 
     const text = body.written();
-    const tagStart = std.mem.indexOf(u8, text, "<updatecheck") orelse return error.MalformedResponse;
-    const tagEnd = std.mem.indexOfPos(u8, text, tagStart, "/>") orelse
-        (std.mem.indexOfPos(u8, text, tagStart, "</updatecheck>") orelse return error.MalformedResponse);
-    const tag = text[tagStart..tagEnd];
+    const tag = findUpdatecheckForApp(text, extensionId) orelse return error.NoUpdateAvailable;
 
     const version = try extractAttr(gpa, tag, "version") orelse return error.NoUpdateAvailable;
     errdefer gpa.free(version);
@@ -201,9 +240,7 @@ test "extracts version, codebase, and hash from a real captured response" {
     const sample =
         \\<?xml version="1.0" encoding="UTF-8"?><gupdate xmlns="http://www.google.com/update2/response" protocol="2.0" server="prod"><daystart elapsed_days="7175" elapsed_seconds="34244"/><app appid="ghlpmldmjjhmdgmneoaibbegkjjbonbk" cohort="1::" cohortname="" status="ok"><updatecheck _esbAllowlist="true" codebase="https://clients2.googleusercontent.com/crx/blobs/AbeXYZ/GHLPMLDMJJHMDGMNEOAIBBEGKJJBONBK_4_9_1_0.crx" fp="1.633ead65" hash_sha256="633ead65d0fe47ed17aa8b8728513ee345a0945b930f72229ac84a6d577d6a1c" protected="0" size="33221788" status="ok" version="4.9.1"/></app></gupdate>
     ;
-    const tagStart = std.mem.indexOf(u8, sample, "<updatecheck").?;
-    const tagEnd = std.mem.indexOfPos(u8, sample, tagStart, "/>").?;
-    const tag = sample[tagStart..tagEnd];
+    const tag = findUpdatecheckForApp(sample, "ghlpmldmjjhmdgmneoaibbegkjjbonbk").?;
 
     const version = (try extractAttr(std.testing.allocator, tag, "version")).?;
     defer std.testing.allocator.free(version);
@@ -223,11 +260,47 @@ test "a bare noupdate response with no codebase yields NoUpdateAvailable, not a 
     const sample =
         \\<?xml version="1.0" encoding="UTF-8"?><gupdate xmlns="http://www.google.com/update2/response" protocol="2.0" server="prod"><app appid="x" status="ok"><updatecheck _esbAllowlist="true" status="noupdate"/></app></gupdate>
     ;
-    const tagStart = std.mem.indexOf(u8, sample, "<updatecheck").?;
-    const tagEnd = std.mem.indexOfPos(u8, sample, tagStart, "/>").?;
-    const tag = sample[tagStart..tagEnd];
+    const tag = findUpdatecheckForApp(sample, "x").?;
     const version = try extractAttr(std.testing.allocator, tag, "version");
     try std.testing.expect(version == null);
+}
+
+test "an unknown appid not present in the response yields null, not a crash" {
+    const sample =
+        \\<?xml version="1.0" encoding="UTF-8"?><gupdate xmlns="http://www.google.com/update2/response" protocol="2.0"><app appid="x"><updatecheck version="1.0" codebase="https://e/x.crx"/></app></gupdate>
+    ;
+    try std.testing.expect(findUpdatecheckForApp(sample, "does-not-exist") == null);
+}
+
+test "a multi-app static manifest returns the requested app's own updatecheck, not the first one in the document" {
+    // Captured live from rogueone.aristotleinsight.com while writing this —
+    // the actual regression this test exists for. The server ignores the
+    // `x=id=...` query param entirely and always returns its full 3-app
+    // catalog; a document-wide "first <updatecheck>" search silently picked
+    // up the Student MV2 build's version (18.14.0) when checking the
+    // Educator extension, whose real version at capture time was 11.0.0.
+    const sample =
+        \\<gupdate xmlns="http://www.google.com/update2/response" protocol="2.0">
+        \\<app appid="lehdheafjemnomjkncejplognngbabho"><updatecheck codebase="https://rogueone.aristotleinsight.com/Student/Download/x" version="18.14.0" /></app><app appid="mjkknmkfafjbnhndgpnjmkbfkiobcahh"><updatecheck codebase="https://rogueone.aristotleinsight.com/Educator/Download/y" version="11.0.0" /></app><app appid="eljeiokhajcnnpgegbcablegmaipigdk"><updatecheck codebase="https://rogueone.aristotleinsight.com/MV3/Student/Download/z" version="23.14.0" /></app></gupdate>
+    ;
+
+    const educator = findUpdatecheckForApp(sample, "mjkknmkfafjbnhndgpnjmkbfkiobcahh").?;
+    const educatorVersion = (try extractAttr(std.testing.allocator, educator, "version")).?;
+    defer std.testing.allocator.free(educatorVersion);
+    try std.testing.expectEqualStrings("11.0.0", educatorVersion);
+
+    // And the app listed *first* in the document is still reachable by its
+    // own id — this isn't "always return the second app," it's "return the
+    // one that was actually asked for."
+    const student = findUpdatecheckForApp(sample, "lehdheafjemnomjkncejplognngbabho").?;
+    const studentVersion = (try extractAttr(std.testing.allocator, student, "version")).?;
+    defer std.testing.allocator.free(studentVersion);
+    try std.testing.expectEqualStrings("18.14.0", studentVersion);
+
+    const mv3Student = findUpdatecheckForApp(sample, "eljeiokhajcnnpgegbcablegmaipigdk").?;
+    const mv3Version = (try extractAttr(std.testing.allocator, mv3Student, "version")).?;
+    defer std.testing.allocator.free(mv3Version);
+    try std.testing.expectEqualStrings("23.14.0", mv3Version);
 }
 
 test "parses the latest version from a real captured versionhistory.googleapis.com response" {

@@ -35,13 +35,16 @@ on the *next* check, once there's an actual change to compare.
 
 ## Scope, honestly
 
-21 of the 28 tracked extensions resolve to a real extension id automatically
-(from the Chrome Web Store's own `_metadata/verified_contents.json`, present
-in any extension actually installed from the store). The other 7 use a
-vendor-hosted, non-Web-Store update endpoint — their `id` is `null` in
-`extensions.json`, and the checker skips them with a clear log line rather
-than guess. See `tools/README.md` for the rest of what's deliberately out of
-scope and why.
+All 28 tracked extensions resolve to a real extension id. 21 came from the
+Chrome Web Store's own `_metadata/verified_contents.json` (present in any
+extension actually installed from the store). The other 7 use a
+vendor-hosted, non-Web-Store update endpoint with no such metadata — those
+were resolved by querying the endpoint directly and reading the real appid
+back out of its response XML (each one verified against the extension's
+locally-recorded version, and Securly's additionally cross-checked against
+`SECURLY_EXTENSION_ID` already hardcoded in Civil's own
+`src/lib/filterCheckVendors.ts`). See `tools/README.md` for the rest of
+what's deliberately out of scope and why.
 
 ## Running it locally
 
