@@ -1,0 +1,107 @@
+# Checks every tracked filter extension's update server twice a week (Monday
+# and Thursday, ~3.5 days apart — "every half week") for a new version. On a
+# change, downloads it, deobfuscates the changed files, diffs them against
+# the last snapshot, and scans the diff for signatures pulled from Civil
+# Proxy's own filterBlockerMiddleware.ts. Commits extensions.json (new
+# versions), the deobfuscated snapshots, and CHANGES_NEEDED.md if anything
+# moved.
+#
+# Budget: blacksmith-2vcpu-ubuntu-2404 is deliberately small — this job is
+# network-bound (Omaha queries, CRX downloads), not compute-bound, so a
+# bigger runner buys nothing. At 2x/week that's ~104 runs/year; even a
+# generous 5 minutes/run is ~43 minutes/month against the 3,000 free
+# minutes/month this org has — see mcp__blacksmith-usage__blacksmith_monthly_usage,
+# confirmed at 0/3000 used before this workflow's first run. Runner label
+# taken from Blacksmith's standard convention; if this org's available
+# runner types differ, adjust `runs-on` to match what's shown in the
+# Blacksmith dashboard.
+#
+# Speed vs. GitHub Actions: the Zig toolchain and its ~15MB yuku dependency
+# are cached (actions/cache, keyed on the exact Zig version and the yuku
+# commit pinned in tools/build.zig.zon) so only the first-ever run pays for
+# downloading and building them — every run after that starts from a warm
+# cache, which a same-shaped GitHub Actions workflow without Blacksmith's
+# faster disk/network would not.
+name: Check filter patches
+
+on:
+  schedule:
+    - cron: "0 6 * * 1,4"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: check-filter-patches
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Filter-Sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # Only misc/filters is needed (for filterBlockerMiddleware.ts, the
+      # signature source — see tools/src/signatures.zig), not the whole
+      # Civil Proxy tree. A sparse, shallow checkout keeps this fast and
+      # keeps a private repo's checkout token scoped to the one directory
+      # this workflow actually reads.
+      - name: Checkout Civil Proxy (misc/filters only)
+        uses: actions/checkout@v4
+        with:
+          repository: civilnetwork-dev/Civil
+          ref: master
+          path: civil-checkout
+          fetch-depth: 1
+          sparse-checkout: |
+            misc/filters
+          sparse-checkout-cone-mode: false
+
+      - name: Cache Zig toolchain and yuku dependency
+        uses: useblacksmith/cache@v5
+        with:
+          path: |
+            ~/.cache/zig
+            ~/zig-toolchain
+          key: zig-0.16.0-yuku-e3e9f1e-${{ runner.os }}
+
+      - name: Install Zig 0.16.0
+        run: |
+          if [ ! -x ~/zig-toolchain/zig ]; then
+            mkdir -p ~/zig-toolchain
+            curl -sL -o /tmp/zig.tar.xz https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz
+            tar -xJf /tmp/zig.tar.xz -C ~/zig-toolchain --strip-components=1
+          fi
+          echo "$HOME/zig-toolchain" >> "$GITHUB_PATH"
+
+      - name: Fetch Zig dependencies
+        working-directory: tools
+        run: zig build --fetch
+
+      - name: Run test suite
+        working-directory: tools
+        run: zig build test
+
+      - name: Build checker
+        working-directory: tools
+        run: zig build -Doptimize=ReleaseSafe
+
+      - name: Run check
+        run: ./tools/zig-out/bin/check check --civil-dir "$GITHUB_WORKSPACE/civil-checkout"
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add extensions.json extensions/ CHANGES_NEEDED.md
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git commit -m "chore: filter check $(date -u +%Y-%m-%d)"
+          git push

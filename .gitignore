@@ -1,0 +1,3 @@
+tools/.zig-cache/
+tools/zig-out/
+tools/zig-pkg/

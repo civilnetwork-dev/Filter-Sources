@@ -1,0 +1,226 @@
+[
+    {
+        "folder": "aristotleEducator",
+        "name": "AristotleK12 Educator",
+        "id": null,
+        "version": "11.0.0",
+        "updateUrl": "https://rogueone.aristotleinsight.com/UpdateCheck/LENAPE_RHSD_NJ_K12_AICS/6edf304682a1180657fb821a4d84acfe/",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "aristotleStudent",
+        "name": "AristotleK12 Student",
+        "id": null,
+        "version": "23.14.0",
+        "updateUrl": "https://rogueone.aristotleinsight.com/UpdateCheck/LENAPE_RHSD_NJ_K12_AICS/6edf304682a1180657fb821a4d84acfe/",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "blocksi",
+        "name": "Blocksi Enterprise Edition",
+        "id": "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
+        "version": "4.9.1",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "ciscoSecurity",
+        "name": "ciscoSecurity",
+        "id": "jgnjaoilojahgagddnkeankieagghabk",
+        "version": "2.2.1",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "ciscoUmbrellaApp",
+        "name": "Cisco Umbrella Chromebook client (App)",
+        "id": "cpnjigmgeapagmdimmoenaghmhilodfg",
+        "version": "1.3.23",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 2
+    },
+    {
+        "folder": "ciscoUmbrellaExtension",
+        "name": "Cisco Umbrella Chromebook client (Ext)",
+        "id": "jcdhmojfecjfmbdpchihbeilohgnbdci",
+        "version": "1.3.4",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 2
+    },
+    {
+        "folder": "ckauthenticatorg3",
+        "name": "CK-Authenticator G3",
+        "id": "odoanpnonilogofggaohhkdkdgbhdljp",
+        "version": "5.1",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "classroomcloud",
+        "name": "classroom.cloud Student",
+        "id": "mpkdoimpgkhjcicmhmlmgboelebflpla",
+        "version": "3.10.0.0",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "contentkeeper",
+        "name": "CKAuthenticator",
+        "id": "jdogphakondfdmcanpapfahkdomaicfa",
+        "version": "2.1.4",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 2
+    },
+    {
+        "folder": "fortiguard",
+        "name": "FortiClient Chromebook Webfilter Extension",
+        "id": "igbgpehnbmhgdgjbhkkpedommgmfbeao",
+        "version": "2.0.0.0017",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "goguardian",
+        "name": "GoGuardian",
+        "id": null,
+        "version": "4.0.7422.1",
+        "updateUrl": "https://ext.goguardian.com/stable.xml",
+        "manifestVersion": 2
+    },
+    {
+        "folder": "gopherbuddy",
+        "name": "Gopher Buddy",
+        "id": "cgbbbjmgdpnifijconhamggjehlamcif",
+        "version": "0.9.9.3",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 2
+    },
+    {
+        "folder": "haparahighlights",
+        "name": "haparahighlights",
+        "id": null,
+        "version": "6.9.0",
+        "updateUrl": "https://extension.hapara.com/extension/updates/manifest-update-url-fallback",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "iboss",
+        "name": "iboss Cloud Connector",
+        "id": "mkhjobnjhllkhekbbedlkmgcglgaeidc",
+        "version": "1.0.170",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "impero",
+        "name": "Impero Backdrop MV3",
+        "id": "jjpmjccpemllnmgiaojaocgnakpmfgjg",
+        "version": "4.0.286",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "imtlazarus",
+        "name": "IMTLazarusv3",
+        "id": "cgigopjakkeclhggchgnhmpmhghcbnaf",
+        "version": "26.4",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "interclass",
+        "name": "InterCLASS Filtering Service",
+        "id": "jbddgjglgkkneonnineaohdhabjbgopi",
+        "version": "6.4.2026.0501",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "lanschoolAir",
+        "name": "lanschoolAir",
+        "id": "baleiojnjpgeojohhhfbichcodgljmnj",
+        "version": "2.25.0.20424",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "lanschoolStudent",
+        "name": "lanschoolStudent",
+        "id": "ifeifkfohlobcbhmlfkenopaimbmnahb",
+        "version": "8.0.2.15",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 2
+    },
+    {
+        "folder": "lanschoolWebHelper",
+        "name": "lanschoolWebHelper",
+        "id": "honjcnefekfnompampcpmcdadibmjhlk",
+        "version": "9.2.0.2",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "lightspeedFilterAgent",
+        "name": "Lightspeed Filter Agent",
+        "id": null,
+        "version": "4.4.6.1785883975",
+        "updateUrl": "https://lsrelay-extensions-production.s3.amazonaws.com/chrome-filter/f8db5b5547d93ef167b094ef5c73485f56e752bb4971141abb5cda8ffb88c8ee/v3/ChromeFilter.xml",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "lightspeedInsightAgent",
+        "name": "Lightspeed Insight Agent",
+        "id": "njdniclgegijdcdliklgieicanpmcngj",
+        "version": "3.11.0",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "linewizeConnect",
+        "name": "Linewize Connect",
+        "id": "ddfbkhpmcdbciejenfcolaaiebnjcbfc",
+        "version": "4.0.3",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "loilo",
+        "name": "loilo",
+        "id": "pabjlbjcgldndnpjnokjakbdofjgnfia",
+        "version": "1.16.13",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "mobileguardian",
+        "name": "Mobile Guardian",
+        "id": "nglbmaiijljohnphofifiodoommladkj",
+        "version": "2.2.68",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 2
+    },
+    {
+        "folder": "netsupport",
+        "name": "NetSupport School Student",
+        "id": "gcjpefhffmcgplgklffgbebganmhffje",
+        "version": "15.0.3.0",
+        "updateUrl": "https://clients2.google.com/service/update2/crx",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "securly",
+        "name": "Securly for Chromebooks",
+        "id": null,
+        "version": "3.0.60",
+        "updateUrl": "https://crextnaut.securly.com/subscribers/defaultfrommanifest@securly.com/update-manifest.xml",
+        "manifestVersion": 3
+    },
+    {
+        "folder": "securlyClassroom",
+        "name": "Securly Classroom",
+        "id": null,
+        "version": "1.37.3",
+        "updateUrl": "https://crextnaut.securly.com/subscribers/defaultfrommanifest@securly.com/update-manifest.xml",
+        "manifestVersion": 3
+    }
+]

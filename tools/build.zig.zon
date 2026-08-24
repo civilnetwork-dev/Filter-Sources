@@ -1,0 +1,13 @@
+.{
+    .name = .filter_sources_tools,
+    .version = "0.0.0",
+    .dependencies = .{
+        .yuku = .{
+            .url = "git+https://github.com/yuku-toolchain/yuku.git#e3e9f1e6a145c1bc519178c8a5d04761dadcb725",
+            .hash = "yuku-0.3.0-m6ranq0cFAB8Jihk5llPy86qeoDrSX5vGf2PbhGZniEa",
+        },
+    },
+    .fingerprint = 0xb0baefe2fe94cb52,
+    .minimum_zig_version = "0.16.0",
+    .paths = .{ "build.zig", "build.zig.zon", "src" },
+}
