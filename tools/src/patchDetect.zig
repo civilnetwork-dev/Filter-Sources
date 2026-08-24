@@ -134,12 +134,16 @@ pub fn checkOne(
     client: *std.http.Client,
     record: ExtensionRecord,
     sigs: []const signatures.Signature,
+    /// Fetched once per run by the caller (see main.zig), not once per
+    /// extension — it's the same value for every Omaha query in a run, and
+    /// re-fetching it 28 times would just be 27 wasted requests.
+    chromeVersion: []const u8,
     paths: struct { baseline: []const u8, scratch: []const u8 },
 ) !CheckOutcome {
     const id = record.id orelse return .{ .skipped = "no known extension id" };
     const updateUrl = record.updateUrl orelse return .{ .skipped = "no update_url on record" };
 
-    const info = omaha.check(gpa, client, updateUrl, id) catch |err| switch (err) {
+    const info = omaha.check(gpa, client, updateUrl, id, chromeVersion) catch |err| switch (err) {
         error.NoUpdateAvailable => return .upToDate,
         else => return err,
     };

@@ -23,6 +23,17 @@
 //! back, and the *local* comparison against the recorded version (see
 //! version.zig) is what actually decides whether anything changed — matching
 //! the task's own ordering: fetch what's published, then compare.
+//!
+//! `prodversion` — the Chrome version this request claims to come from — is
+//! fetched dynamically from Google's own Chrome Version History API rather
+//! than hardcoded. A hardcoded value goes stale by construction: this file
+//! originally shipped with `128.0.0.0`, and by the time this comment was
+//! written the real current stable was `151.0.7922.173` (confirmed live
+//! against `versionhistory.googleapis.com`) — over twenty major versions
+//! off. Nothing observed in this file's responses actually *depends* on
+//! `prodversion` being current (Google's server answered correctly even
+//! carrying the stale value), but claiming a Chrome version over a year old
+//! is the kind of detail that's cheap to keep honest and easy to forget.
 
 const std = @import("std");
 const Allocator = std.mem.Allocator;
@@ -47,13 +58,18 @@ pub const CheckError = error{
 /// The query string Chrome itself sends, percent-encoded exactly as Chrome
 /// encodes it (the `x=` param's *value* is itself a second query string,
 /// percent-encoded once more so it survives as one opaque param).
-fn buildRequestUrl(gpa: Allocator, updateUrl: []const u8, extensionId: []const u8) Allocator.Error![]u8 {
+fn buildRequestUrl(
+    gpa: Allocator,
+    updateUrl: []const u8,
+    extensionId: []const u8,
+    chromeVersion: []const u8,
+) Allocator.Error![]u8 {
     return std.fmt.allocPrint(
         gpa,
         "{s}?os=linux&arch=x64&os_arch=x86_64&nacl_arch=x86-64&prod=chromiumcrx" ++
-            "&prodchannel=&prodversion=128.0.0.0&lang=en-US&acceptformat=crx2,crx3" ++
+            "&prodchannel=&prodversion={s}&lang=en-US&acceptformat=crx2,crx3" ++
             "&x=id%3D{s}%26v%3D0.0.0.0%26installsource%3Dondemand%26uc",
-        .{ updateUrl, extensionId },
+        .{ updateUrl, chromeVersion, extensionId },
     );
 }
 
@@ -80,8 +96,9 @@ pub fn check(
     client: *std.http.Client,
     updateUrl: []const u8,
     extensionId: []const u8,
+    chromeVersion: []const u8,
 ) CheckError!UpdateInfo {
-    const requestUrl = try buildRequestUrl(gpa, updateUrl, extensionId);
+    const requestUrl = try buildRequestUrl(gpa, updateUrl, extensionId, chromeVersion);
     defer gpa.free(requestUrl);
 
     var body: std.Io.Writer.Allocating = .init(gpa);
@@ -111,8 +128,69 @@ pub fn check(
     return .{ .version = version, .codebase = codebase, .hashSha256 = hash };
 }
 
+const CHROME_VERSION_API =
+    "https://versionhistory.googleapis.com/v1/chrome/platforms/linux/channels/stable/versions?pageSize=1";
+
+/// Hardcoded floor used only if the live lookup fails (network hiccup, API
+/// shape change) — see `fetchLatestChromeVersion`. Not meant to stay current;
+/// meant to keep the tool working on a bad day without guessing wrong.
+const FALLBACK_CHROME_VERSION = "128.0.0.0";
+
+/// The JSON body's shape (only the piece this needs):
+/// `{"versions":[{"name":"...","version":"151.0.7922.173"}],"nextPageToken":"..."}`.
+/// Split from `fetchLatestChromeVersion` so the parsing itself is testable
+/// against a real captured response without a network call.
+fn parseLatestVersion(gpa: Allocator, json: []const u8) !?[]u8 {
+    const Response = struct { versions: []struct { version: []const u8 } };
+    var parsed = std.json.parseFromSlice(Response, gpa, json, .{ .ignore_unknown_fields = true }) catch return null;
+    defer parsed.deinit();
+    if (parsed.value.versions.len == 0) return null;
+    return try gpa.dupe(u8, parsed.value.versions[0].version);
+}
+
+/// Queries Google's official Chrome Version History API
+/// (https://developer.chrome.com/docs/web-platform/chrome-versionhistory)
+/// for the current stable Linux Chrome version. Verified live while writing
+/// this — see the module doc comment for the actual numbers.
+///
+/// Falls back to `FALLBACK_CHROME_VERSION` on any failure (network,
+/// unexpected response shape) instead of failing the whole run: nothing
+/// this tool has observed actually depends on `prodversion` being current
+/// (see `check`'s doc comment), so a lookup failure here should degrade,
+/// not abort a check of 28 extensions over one cosmetic field.
+pub fn fetchLatestChromeVersion(gpa: Allocator, client: *std.http.Client) Allocator.Error![]u8 {
+    var body: std.Io.Writer.Allocating = .init(gpa);
+    defer body.deinit();
+
+    const result = client.fetch(.{
+        .location = .{ .url = CHROME_VERSION_API },
+        .response_writer = &body.writer,
+    }) catch return gpa.dupe(u8, FALLBACK_CHROME_VERSION);
+    if (result.status != .ok) return gpa.dupe(u8, FALLBACK_CHROME_VERSION);
+
+    return (parseLatestVersion(gpa, body.written()) catch null) orelse
+        try gpa.dupe(u8, FALLBACK_CHROME_VERSION);
+}
+
+test "buildRequestUrl threads the given Chrome version through, not a hardcoded one" {
+    const url = try buildRequestUrl(
+        std.testing.allocator,
+        "https://clients2.google.com/service/update2/crx",
+        "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
+        "151.0.7922.173",
+    );
+    defer std.testing.allocator.free(url);
+    try std.testing.expect(std.mem.indexOf(u8, url, "prodversion=151.0.7922.173") != null);
+    try std.testing.expect(std.mem.indexOf(u8, url, "128.0.0.0") == null);
+}
+
 test "buildRequestUrl percent-encodes the nested x= query correctly" {
-    const url = try buildRequestUrl(std.testing.allocator, "https://clients2.google.com/service/update2/crx", "ghlpmldmjjhmdgmneoaibbegkjjbonbk");
+    const url = try buildRequestUrl(
+        std.testing.allocator,
+        "https://clients2.google.com/service/update2/crx",
+        "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
+        "151.0.0.0",
+    );
     defer std.testing.allocator.free(url);
     try std.testing.expect(std.mem.indexOf(u8, url, "x=id%3Dghlpmldmjjhmdgmneoaibbegkjjbonbk%26v%3D0.0.0.0") != null);
 }
@@ -150,4 +228,34 @@ test "a bare noupdate response with no codebase yields NoUpdateAvailable, not a 
     const tag = sample[tagStart..tagEnd];
     const version = try extractAttr(std.testing.allocator, tag, "version");
     try std.testing.expect(version == null);
+}
+
+test "parses the latest version from a real captured versionhistory.googleapis.com response" {
+    // Captured live from versionhistory.googleapis.com?pageSize=1 while
+    // writing this.
+    const sample =
+        \\{
+        \\  "versions": [
+        \\    {
+        \\      "name": "chrome/platforms/linux/channels/stable/versions/151.0.7922.173",
+        \\      "version": "151.0.7922.173"
+        \\    }
+        \\  ],
+        \\  "nextPageToken": "226156535"
+        \\}
+    ;
+    const version = (try parseLatestVersion(std.testing.allocator, sample)).?;
+    defer std.testing.allocator.free(version);
+    try std.testing.expectEqualStrings("151.0.7922.173", version);
+}
+
+test "parseLatestVersion degrades to null on garbage input instead of erroring" {
+    const notJson = try parseLatestVersion(std.testing.allocator, "not json at all");
+    try std.testing.expect(notJson == null);
+
+    const emptyVersions = (try parseLatestVersion(std.testing.allocator, "{\"versions\":[]}"));
+    try std.testing.expect(emptyVersions == null);
+
+    const wrongShape = try parseLatestVersion(std.testing.allocator, "{\"unrelated\":true}");
+    try std.testing.expect(wrongShape == null);
 }

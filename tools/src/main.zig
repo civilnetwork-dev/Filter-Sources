@@ -18,6 +18,7 @@
 
 const std = @import("std");
 const Io = std.Io;
+const omaha = @import("omaha.zig");
 const patchDetect = @import("patchDetect.zig");
 const signatures = @import("signatures.zig");
 const ExtensionRecord = patchDetect.ExtensionRecord;
@@ -74,6 +75,17 @@ pub fn main(init: std.process.Init) !u8 {
     var client: std.http.Client = .{ .allocator = gpa, .io = io };
     defer client.deinit();
 
+    // Fetched once, not once per extension — every Omaha query below carries
+    // the same `prodversion`, so 28 separate lookups would just be 27 wasted
+    // requests for an identical answer. See omaha.zig for why this is fetched
+    // live instead of hardcoded, and why a lookup failure degrades to a
+    // fallback rather than aborting the run.
+    const chromeVersion = try omaha.fetchLatestChromeVersion(a, &client);
+    {
+        var buf: [96]u8 = undefined;
+        try Io.File.stdout().writeStreamingAll(io, try std.fmt.bufPrint(&buf, "using Chrome version {s}\n", .{chromeVersion}));
+    }
+
     var changes = try loadChangesSections(a, io);
 
     for (records, 0..) |*record, i| {
@@ -83,7 +95,7 @@ pub fn main(init: std.process.Init) !u8 {
         const baseline = try std.fmt.allocPrint(a, "{s}/{s}/deobfuscated", .{ SNAPSHOTS_DIR, record.folder });
         const scratch = try std.fmt.allocPrint(a, "{s}/{s}/.scratch", .{ SNAPSHOTS_DIR, record.folder });
 
-        const outcome = patchDetect.checkOne(a, io, &client, record.*, sigs.items, .{ .baseline = baseline, .scratch = scratch }) catch |err| {
+        const outcome = patchDetect.checkOne(a, io, &client, record.*, sigs.items, chromeVersion, .{ .baseline = baseline, .scratch = scratch }) catch |err| {
             try Io.File.stdout().writeStreamingAll(io, try std.fmt.bufPrint(&lineBuf, "error: {t}\n", .{err}));
             continue;
         };
