@@ -1,3 +1,13 @@
 tools/.zig-cache/
 tools/zig-out/
 tools/zig-pkg/
+
+# Unpacked CRXes, deobfuscated snapshots, and the checker's scratch trees.
+#
+# These are the baseline each run diffs the next release against, so they do
+# have to survive between runs — but not in git. Twenty-eight vendor bundles,
+# rewritten twice a week, would grow this repository without bound and bury
+# every real change under a wall of regenerated output. The workflow carries
+# them across runs through the Actions cache instead; see the "Restore
+# extension snapshots" step in .github/workflows/check-filter-patches.yml.
+extensions/

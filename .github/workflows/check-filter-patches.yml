@@ -3,8 +3,11 @@
 # change, downloads it, deobfuscates the changed files, diffs them against
 # the last snapshot, and scans the diff for signatures pulled from Civil
 # Proxy's own filterBlockerMiddleware.ts. Commits extensions.json (new
-# versions), the deobfuscated snapshots, and CHANGES_NEEDED.md if anything
-# moved.
+# versions) and CHANGES_NEEDED.md if anything moved.
+#
+# The deobfuscated snapshots themselves are NOT committed — see .gitignore.
+# They still have to survive between runs, since a diff needs something to
+# diff against; they ride the Actions cache instead of git.
 #
 # Budget: blacksmith-2vcpu-ubuntu-2404 is deliberately small — this job is
 # network-bound (Omaha queries, CRX downloads), not compute-bound, so a
@@ -70,14 +73,24 @@ jobs:
             ~/zig-toolchain
           key: zig-0.16.0-yuku-e3e9f1e-${{ runner.os }}
 
-      - name: Install Zig 0.16.0
-        run: |
-          if [ ! -x ~/zig-toolchain/zig ]; then
-            mkdir -p ~/zig-toolchain
-            curl -sL -o /tmp/zig.tar.xz https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz
-            tar -xJf /tmp/zig.tar.xz -C ~/zig-toolchain --strip-components=1
-          fi
-          echo "$HOME/zig-toolchain" >> "$GITHUB_PATH"
+      # The deobfuscated snapshots from the previous run — the baseline the
+      # checker diffs this run's downloads against. `key` is unique per run
+      # so every run writes a fresh entry; `restore-keys` matches the newest
+      # earlier one, which is the chain that carries the baseline forward.
+      #
+      # If the entry is ever evicted (GitHub drops caches untouched for 7
+      # days; this one is rewritten twice a week, so that needs the workflow
+      # to stop running first), the checker finds no baseline, records one,
+      # and flags nothing that run — the same correct first-run behavior
+      # described in the README. One cycle of detection is lost, not
+      # correctness.
+      - name: Restore extension snapshots
+        uses: useblacksmith/cache@v5
+        with:
+          path: extensions
+          key: filter-snapshots-${{ github.run_id }}
+          restore-keys: |
+            filter-snapshots-
 
       - name: Fetch Zig dependencies
         working-directory: tools
@@ -98,7 +111,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add extensions.json extensions/ CHANGES_NEEDED.md
+          git add extensions.json
+          # Tolerated failure, not sloppiness: CHANGES_NEEDED.md only exists
+          # once something has actually been flagged, and `git add` errors on
+          # a pathspec matching nothing — which under `bash -e` would fail
+          # every run where no vendor has patched anything, i.e. the normal
+          # case.
+          git add CHANGES_NEEDED.md 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "Nothing changed."
             exit 0

@@ -18,7 +18,10 @@ extension-autoupdate protocol. When a version has moved:
    folding, dead-branch pruning — so the diff in the next step is a diff of
    readable code, not two different obfuscator outputs that happen to be
    semantically identical.
-3. Diffs each changed file against the last snapshot (`extensions/<name>/deobfuscated/`)
+3. Diffs each changed file against the last snapshot (`extensions/<name>/deobfuscated/`,
+   gitignored — carried between runs in the Actions cache rather than
+   committed, since twenty-eight vendor bundles rewritten twice a week would
+   bury every real change under regenerated output)
    and scans the *added* lines for anything that matches a signature pulled
    from Civil's own `misc/filters/filterBlockerMiddleware.ts` — a vendor
    telemetry domain Civil blocks, or a header/event name Civil defined.
