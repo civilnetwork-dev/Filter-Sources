@@ -19,12 +19,12 @@
 # runner types differ, adjust `runs-on` to match what's shown in the
 # Blacksmith dashboard.
 #
-# Speed vs. GitHub Actions: the Zig toolchain and its ~15MB yuku dependency
-# are cached (actions/cache, keyed on the exact Zig version and the yuku
-# commit pinned in tools/build.zig.zon) so only the first-ever run pays for
-# downloading and building them — every run after that starts from a warm
-# cache, which a same-shaped GitHub Actions workflow without Blacksmith's
-# faster disk/network would not.
+# Speed vs. GitHub Actions: setup-zig caches both the toolchain and the
+# global Zig cache (keyed on tools/build.zig.zon, so the ~15MB yuku
+# dependency is covered too), which means only the first run pays to fetch
+# and build them. Every run after that starts warm — on top of Blacksmith's
+# faster disk and network, which a same-shaped plain GitHub Actions workflow
+# would not have.
 name: Check filter patches
 
 on:
@@ -65,13 +65,13 @@ jobs:
             misc/filters
           sparse-checkout-cone-mode: false
 
-      - name: Cache Zig toolchain and yuku dependency
-        uses: useblacksmith/cache@v5
+      # Must match `minimum_zig_version` in tools/build.zig.zon. This is the
+      # step whose absence made the first run fail with
+      # `zig: command not found` — nothing else here installs a toolchain.
+      - name: Install Zig
+        uses: mlugg/setup-zig@v2
         with:
-          path: |
-            ~/.cache/zig
-            ~/zig-toolchain
-          key: zig-0.16.0-yuku-e3e9f1e-${{ runner.os }}
+          version: 0.16.0
 
       # The deobfuscated snapshots from the previous run — the baseline the
       # checker diffs this run's downloads against. `key` is unique per run
@@ -91,6 +91,11 @@ jobs:
           key: filter-snapshots-${{ github.run_id }}
           restore-keys: |
             filter-snapshots-
+
+      # Cheap, and it makes a broken toolchain say so here rather than as a
+      # confusing failure inside a later build step.
+      - name: Verify toolchain
+        run: zig version
 
       - name: Fetch Zig dependencies
         working-directory: tools
