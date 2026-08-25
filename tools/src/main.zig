@@ -63,10 +63,16 @@ pub fn main(init: std.process.Init) !u8 {
     const sigs = signatures.collectFromFile(a, io, middlewarePath) catch |err| {
         return fail(io, try std.fmt.allocPrint(a, "reading Civil filter signatures from {s}: {t}\n", .{ middlewarePath, err }));
     };
-    {
-        var buf: [128]u8 = undefined;
-        try Io.File.stdout().writeStreamingAll(io, try std.fmt.bufPrint(&buf, "loaded {d} signatures from {s}\n", .{ sigs.items.len, middlewarePath }));
-    }
+    // Allocated, not a fixed buffer: this line embeds `middlewarePath`, whose
+    // length is the caller's `--civil-dir` plus 42 characters and so has no
+    // bound this code gets to assume. A [128]u8 was enough for a local run out
+    // of a short checkout and two bytes short in CI, where the path is
+    // /home/runner/_work/Filter-Sources/Filter-Sources/civil-checkout/... —
+    // 103 characters, for a 130-character line. That overflow is
+    // `error.NoSpaceLeft`, and it aborted the run before a single extension
+    // was checked. Every other message printed here is bounded (a version, a
+    // folder name, an error name); only the ones carrying a path are not.
+    try Io.File.stdout().writeStreamingAll(io, try std.fmt.allocPrint(a, "loaded {d} signatures from {s}\n", .{ sigs.items.len, middlewarePath }));
 
     const recordsJson = try Io.Dir.cwd().readFileAlloc(io, EXTENSIONS_JSON, a, .limited(4 * 1024 * 1024));
     const parsed = try std.json.parseFromSlice([]ExtensionRecord, a, recordsJson, .{ .ignore_unknown_fields = true });
