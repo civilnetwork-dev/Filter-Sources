@@ -11,7 +11,7 @@
         "folder": "aristotleStudent",
         "name": "AristotleK12 Student",
         "id": "eljeiokhajcnnpgegbcablegmaipigdk",
-        "version": "23.14.0",
+        "version": "23.17.0",
         "updateUrl": "https://rogueone.aristotleinsight.com/UpdateCheck/LENAPE_RHSD_NJ_K12_AICS/6edf304682a1180657fb821a4d84acfe/",
         "manifestVersion": 3
     },
@@ -107,7 +107,7 @@
         "folder": "iboss",
         "name": "iboss Cloud Connector",
         "id": "mkhjobnjhllkhekbbedlkmgcglgaeidc",
-        "version": "1.0.180",
+        "version": "1.0.185",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -131,7 +131,7 @@
         "folder": "interclass",
         "name": "InterCLASS Filtering Service",
         "id": "jbddgjglgkkneonnineaohdhabjbgopi",
-        "version": "6.4.2026.0501",
+        "version": "6.5.2026.0827",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -179,7 +179,7 @@
         "folder": "linewizeConnect",
         "name": "Linewize Connect",
         "id": "ddfbkhpmcdbciejenfcolaaiebnjcbfc",
-        "version": "4.0.3",
+        "version": "4.0.4",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
