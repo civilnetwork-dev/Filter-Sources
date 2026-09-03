@@ -19,7 +19,7 @@
         "folder": "blocksi",
         "name": "Blocksi Enterprise Edition",
         "id": "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
-        "version": "4.9.2",
+        "version": "4.9.3",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -107,7 +107,7 @@
         "folder": "iboss",
         "name": "iboss Cloud Connector",
         "id": "mkhjobnjhllkhekbbedlkmgcglgaeidc",
-        "version": "1.0.185",
+        "version": "1.0.190",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -139,7 +139,7 @@
         "folder": "lanschoolAir",
         "name": "lanschoolAir",
         "id": "baleiojnjpgeojohhhfbichcodgljmnj",
-        "version": "2.25.0.20424",
+        "version": "2.25.0.22463",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },

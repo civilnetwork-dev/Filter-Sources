@@ -10,15 +10,15 @@ that flagged it.
 <!-- filter:iboss -->
 ## iboss Cloud Connector
 
-The filter iboss Cloud Connector's developers made changes that you need to fix in Civil Proxy. Detected on update to version 1.0.185.
+The filter iboss Cloud Connector's developers made changes that you need to fix in Civil Proxy. Detected on update to version 1.0.190.
 
 - `iboss/services/PACService.js:16` matched Civil's own signature `ibosscloud.com`:
   ```diff
-    #y = ["ibosscloud.com", "ibosscloud-staging.com", "ibossgov.com", "ibossgov-staging.com", "ibosstest.com"];
+    #O = ["ibosscloud.com", "ibosscloud-staging.com", "ibossgov.com", "ibossgov-staging.com", "ibosstest.com"];
   ```
 - `iboss/services/PACService.js:17` matched Civil's own signature `ibossgov.com`:
   ```diff
-    #y = ["ibosscloud.com", "ibosscloud-staging.com", "ibossgov.com", "ibossgov-staging.com", "ibosstest.com"];
+    #O = ["ibosscloud.com", "ibosscloud-staging.com", "ibossgov.com", "ibossgov-staging.com", "ibosstest.com"];
   ```
 <!-- /filter:iboss -->
 
