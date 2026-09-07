@@ -19,7 +19,7 @@
         "folder": "blocksi",
         "name": "Blocksi Enterprise Edition",
         "id": "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
-        "version": "4.9.3",
+        "version": "4.9.4",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
