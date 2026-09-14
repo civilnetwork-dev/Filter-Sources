@@ -19,7 +19,7 @@
         "folder": "blocksi",
         "name": "Blocksi Enterprise Edition",
         "id": "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
-        "version": "4.9.4",
+        "version": "4.9.5",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -219,7 +219,7 @@
         "folder": "securlyClassroom",
         "name": "Securly Classroom",
         "id": "hkobaiihndnbfhbkmjjfbdimfbdcppdh",
-        "version": "1.37.3",
+        "version": "2.0.3",
         "updateUrl": "https://crextnaut.securly.com/subscribers/defaultfrommanifest@securly.com/update-manifest.xml",
         "manifestVersion": 3
     }
