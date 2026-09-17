@@ -19,7 +19,7 @@
         "folder": "blocksi",
         "name": "Blocksi Enterprise Edition",
         "id": "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
-        "version": "4.9.5",
+        "version": "4.9.7",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -187,7 +187,7 @@
         "folder": "loilo",
         "name": "loilo",
         "id": "pabjlbjcgldndnpjnokjakbdofjgnfia",
-        "version": "1.16.13",
+        "version": "1.17.2",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
