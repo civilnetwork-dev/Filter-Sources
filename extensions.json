@@ -19,7 +19,7 @@
         "folder": "blocksi",
         "name": "Blocksi Enterprise Edition",
         "id": "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
-        "version": "4.9.7",
+        "version": "4.9.8",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -179,7 +179,7 @@
         "folder": "linewizeConnect",
         "name": "Linewize Connect",
         "id": "ddfbkhpmcdbciejenfcolaaiebnjcbfc",
-        "version": "4.0.4",
+        "version": "4.0.5",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -211,7 +211,7 @@
         "folder": "securly",
         "name": "Securly for Chromebooks",
         "id": "ckecmkbnoanpgplccmnoikfmpcdladkc",
-        "version": "3.0.68",
+        "version": "3.0.70",
         "updateUrl": "https://crextnaut.securly.com/subscribers/defaultfrommanifest@securly.com/update-manifest.xml",
         "manifestVersion": 3
     },
@@ -219,7 +219,7 @@
         "folder": "securlyClassroom",
         "name": "Securly Classroom",
         "id": "hkobaiihndnbfhbkmjjfbdimfbdcppdh",
-        "version": "2.0.3",
+        "version": "2.0.5",
         "updateUrl": "https://crextnaut.securly.com/subscribers/defaultfrommanifest@securly.com/update-manifest.xml",
         "manifestVersion": 3
     }
