@@ -107,7 +107,7 @@
         "folder": "iboss",
         "name": "iboss Cloud Connector",
         "id": "mkhjobnjhllkhekbbedlkmgcglgaeidc",
-        "version": "1.0.190",
+        "version": "1.0.195",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -187,7 +187,7 @@
         "folder": "loilo",
         "name": "loilo",
         "id": "pabjlbjcgldndnpjnokjakbdofjgnfia",
-        "version": "1.17.2",
+        "version": "1.18.0",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
