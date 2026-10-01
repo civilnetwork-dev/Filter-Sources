@@ -211,7 +211,7 @@
         "folder": "securly",
         "name": "Securly for Chromebooks",
         "id": "ckecmkbnoanpgplccmnoikfmpcdladkc",
-        "version": "3.0.70",
+        "version": "3.0.73",
         "updateUrl": "https://crextnaut.securly.com/subscribers/defaultfrommanifest@securly.com/update-manifest.xml",
         "manifestVersion": 3
     },
