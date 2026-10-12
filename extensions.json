@@ -11,7 +11,7 @@
         "folder": "aristotleStudent",
         "name": "AristotleK12 Student",
         "id": "eljeiokhajcnnpgegbcablegmaipigdk",
-        "version": "23.17.0",
+        "version": "23.19.0",
         "updateUrl": "https://rogueone.aristotleinsight.com/UpdateCheck/LENAPE_RHSD_NJ_K12_AICS/6edf304682a1180657fb821a4d84acfe/",
         "manifestVersion": 3
     },
@@ -19,7 +19,7 @@
         "folder": "blocksi",
         "name": "Blocksi Enterprise Edition",
         "id": "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
-        "version": "4.9.10",
+        "version": "4.9.12",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -123,7 +123,7 @@
         "folder": "imtlazarus",
         "name": "IMTLazarusv3",
         "id": "cgigopjakkeclhggchgnhmpmhghcbnaf",
-        "version": "26.5",
+        "version": "26.7",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
