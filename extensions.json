@@ -19,7 +19,7 @@
         "folder": "blocksi",
         "name": "Blocksi Enterprise Edition",
         "id": "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
-        "version": "4.9.12",
+        "version": "4.9.13",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -131,7 +131,7 @@
         "folder": "interclass",
         "name": "InterCLASS Filtering Service",
         "id": "jbddgjglgkkneonnineaohdhabjbgopi",
-        "version": "6.5.2026.0827",
+        "version": "6.5.2026.1014",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
@@ -179,7 +179,7 @@
         "folder": "linewizeConnect",
         "name": "Linewize Connect",
         "id": "ddfbkhpmcdbciejenfcolaaiebnjcbfc",
-        "version": "4.0.5",
+        "version": "4.0.6",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
