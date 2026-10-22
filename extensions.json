@@ -107,7 +107,7 @@
         "folder": "iboss",
         "name": "iboss Cloud Connector",
         "id": "mkhjobnjhllkhekbbedlkmgcglgaeidc",
-        "version": "1.0.195",
+        "version": "1.0.200",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
