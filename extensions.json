@@ -11,7 +11,7 @@
         "folder": "aristotleStudent",
         "name": "AristotleK12 Student",
         "id": "eljeiokhajcnnpgegbcablegmaipigdk",
-        "version": "23.22.0",
+        "version": "23.23.0",
         "updateUrl": "https://rogueone.aristotleinsight.com/UpdateCheck/LENAPE_RHSD_NJ_K12_AICS/6edf304682a1180657fb821a4d84acfe/",
         "manifestVersion": 3
     },
@@ -19,7 +19,7 @@
         "folder": "blocksi",
         "name": "Blocksi Enterprise Edition",
         "id": "ghlpmldmjjhmdgmneoaibbegkjjbonbk",
-        "version": "4.9.18",
+        "version": "4.9.20",
         "updateUrl": "https://clients2.google.com/service/update2/crx",
         "manifestVersion": 3
     },
